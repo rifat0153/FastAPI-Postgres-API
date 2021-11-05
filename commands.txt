@@ -1,1 +1,6 @@
+#activate virtual env
 venv\Scripts\activate.bat
+
+#Start server and watch for changes
+uvicorn [package_name].[filename]:[app module] --reload
+uvicorn app.main:app --reload  
