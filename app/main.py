@@ -6,7 +6,6 @@ import time
 from fastapi import FastAPI, Response, status, HTTPException
 from fastapi.params import Body
 from pydantic import BaseModel
-from starlette.status import HTTP_404_NOT_FOUND
 
 app = FastAPI()
 
@@ -38,7 +37,7 @@ while True:
         time.sleep(2)
 
 
-@app.get("/")
+@app.get("/posts")
 def root():
     cursor.execute(""" SELECT * FROM posts """)
     posts = cursor.fetchall()
