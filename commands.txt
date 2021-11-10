@@ -1,6 +1,17 @@
 #activate virtual env
-venv\Scripts\activate.bat
+
+    venv\Scripts\activate.bat
 
 #Start server and watch for changes
-uvicorn [package_name].[filename]:[app module] --reload
-uvicorn app.main:app --reload  
+
+    uvicorn [package_name].[filename]:[app module] --reload
+    uvicorn app.main:app --reload  
+
+
+# Email validator
+
+    pip install email-validator
+
+# Hashing Library
+
+    pip install passlib[bcrypt]   

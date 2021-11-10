@@ -1,14 +1,14 @@
 from operator import pos
+from passlib.utils.decor import deprecated_method
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from typing import List, Optional
-import time
 from fastapi import FastAPI, Response, status, HTTPException
-from fastapi.params import Body, Depends
+from fastapi.params import Depends
 from pydantic import BaseModel
 from sqlalchemy.orm.session import Session
 from sqlalchemy.sql.coercions import ReturnsRowsImpl
-from . import models, schemas
+from . import models, schemas, utils
 from .database import engine, get_db
 
 models.Base.metadata.create_all(bind=engine)
@@ -35,7 +35,7 @@ app = FastAPI()
 #         print("Error: ", error)
 #         time.sleep(2)
 
-@app.get("/posts", response_model= List[schemas.Post])
+@app.get("/posts", response_model=List[schemas.Post])
 def root(db: Session = Depends(get_db)):
     # cursor.execute(""" SELECT * FROM posts """)
     # posts = cursor.fetchall()
@@ -135,3 +135,21 @@ def update_post(id: int, post: schemas.PostCreate, db: Session = Depends(get_db)
     db.commit()
 
     return post_query.first()
+
+
+@app.post("/users", status_code=status.HTTP_201_CREATED,
+          response_model=schemas.UserResponse
+          )
+def create_user(user: schemas.UserCreate,
+                db: Session = Depends(get_db)):
+    new_user = models.User(**user.dict())
+
+    # hash password
+    hashed_password = utils.hash(user.password)
+    new_user.password = hashed_password
+
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    return new_user
